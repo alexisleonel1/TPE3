@@ -1,11 +1,11 @@
 package Entidades;
 
 import java.sql.Timestamp;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 public class Inscriptos {
@@ -19,6 +19,7 @@ public class Inscriptos {
 	private Carrera carrera;
 	
 	@Column
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Timestamp antiguedad;
 	
 	@Column

@@ -99,6 +99,14 @@ public class Estudiante {
 	public void setNumLibretaUniversitaria(int numLibretaUniversitaria) {
 		this.numLibretaUniversitaria = numLibretaUniversitaria;
 	}
+	
+	public Ciudad getCiudad() {
+		return ciudad;
+	}
+	
+	public void setCiudad(Ciudad c) {
+		ciudad = c;
+	}
 
 	@Override
 	public String toString() {

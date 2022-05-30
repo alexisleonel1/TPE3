@@ -2,8 +2,8 @@ package REST;
 
 import java.util.List;
 
-import Entidades.Carrera;
-import Repositorio.CarreraRepositorio;
+import Entidades.Ciudad;
+import Repositorio.CiudadRepositorio;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -16,28 +16,28 @@ import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-@Path("/carreras")
-public class CarreraRESTController {
+@Path("/ciudades")
+public class CiudadRESTController {
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response createCarrera(Carrera carrera) {
-		Carrera result = CarreraRepositorio.getInstance().save(carrera);
+	public Response createCiudad(Ciudad ciudad) {
+		Ciudad result = CiudadRepositorio.getInstance().save(ciudad);
 		if(result==null) {
-			throw new RecursoDuplicado(carrera.getId());
+			throw new RecursoDuplicado(ciudad.getId());
 		}else {
-			return Response.status(201).entity(carrera).build();
+			return Response.status(201).entity(ciudad).build();
 		}
 	}
 	
 	@GET
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Carrera getCarreraById(@PathParam("id") int ID) {
-		Carrera carrera = CarreraRepositorio.getInstance().get(ID);
-		if(carrera != null)
-			return carrera;
+	public Ciudad getCidudadById(@PathParam("id") int ID) {
+		Ciudad ciudad = CiudadRepositorio.getInstance().get(ID);
+		if(ciudad != null)
+			return ciudad;
 		else
 			throw new RecursoNoExiste(ID);
 	}
@@ -45,10 +45,10 @@ public class CarreraRESTController {
 	@GET
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Carrera> getCarreras() {
-		List<Carrera> carrera = CarreraRepositorio.getInstance().getAll();
-		if(carrera != null)
-			return carrera;
+	public List<Ciudad> getCiudades() {
+		List<Ciudad> ciudad = CiudadRepositorio.getInstance().getAll();
+		if(ciudad != null)
+			return ciudad;
 		else
 			throw new RecursoNoExiste(0);
 	}
@@ -56,10 +56,10 @@ public class CarreraRESTController {
 	@DELETE
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response deleteCarrera(@PathParam("id") int id) {
-		Carrera perro = CarreraRepositorio.getInstance().get(id);
-		if(perro!=null) {
-			CarreraRepositorio.getInstance().delete(id);
+	public Response deleteCiudad(@PathParam("id") int id) {
+		Ciudad ciudad = CiudadRepositorio.getInstance().get(id);
+		if(ciudad!=null) {
+			CiudadRepositorio.getInstance().delete(id);
 			return Response.ok().build();
 			}
 		else
@@ -69,12 +69,12 @@ public class CarreraRESTController {
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response updateCarrera(Carrera carrera) {
-		Carrera result = CarreraRepositorio.getInstance().update(carrera);
+	public Response updateCiudad(Ciudad ciudad) {
+		Ciudad result = CiudadRepositorio.getInstance().update(ciudad);
 		if(result==null) {
-			throw new RecursoNoExiste(carrera.getId());
+			throw new RecursoNoExiste(ciudad.getId());
 		}else {
-				return Response.status(200).entity(carrera).build();
+				return Response.status(200).entity(ciudad).build();
 			}
 		}
 	
@@ -91,5 +91,5 @@ public class CarreraRESTController {
 	             .entity("El recurso con id "+id+" no fue encontrado").type(MediaType.TEXT_PLAIN).build());
 	     }
 	}
-	
+
 }

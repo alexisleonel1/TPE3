@@ -2,27 +2,28 @@ package Repositorio;
 
 import java.util.List;
 
-import Entidades.Ciudad;
 import Entidades.Estudiante;
+import Factory.Factory;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 
 public class EstudianteRepositorio implements Repository<Estudiante>{
 	
-	private EntityManagerFactory emf;
-
-	public EstudianteRepositorio(EntityManagerFactory emf) {
-		this.emf = emf;
+	private static EstudianteRepositorio estudianteRepo;
+	
+	public static EstudianteRepositorio getInstance() {
+		if(estudianteRepo==null)
+			estudianteRepo=new EstudianteRepositorio();
+		return estudianteRepo;
 	}
 	
-	public Estudiante insert(String nombre,String apellido, int edad, char genero,int dni,int numLibretaUniversitaria,Ciudad ciudad) {
-		Estudiante e = new Estudiante(nombre,apellido,edad,genero,dni,numLibretaUniversitaria,ciudad);
-		return this.save(e);
-	}
+	public EstudianteRepositorio() {}
 	
 	public Estudiante getByNumLibretaUniversitaria(int l) {
-		EntityManager em = emf.createEntityManager();
+		EntityManager em = Factory.createEntityManager();
 		em.getTransaction().begin();
 		TypedQuery<Estudiante> query = em.createQuery("SELECT e FROM Estudiante e WHERE e.numLibretaUniversitaria = ?1", Estudiante.class);
 		query.setParameter(1, l);
@@ -32,7 +33,7 @@ public class EstudianteRepositorio implements Repository<Estudiante>{
 	}
 	
 	public List<Estudiante> getEstudiantesByEdad() {
-		EntityManager em = emf.createEntityManager();
+		EntityManager em = Factory.createEntityManager();
 		em.getTransaction().begin();
 		TypedQuery<Estudiante> query = em.createQuery("SELECT e FROM Estudiante e ORDER BY e.edad ASC", Estudiante.class);
 		List<Estudiante> estudiantes = query.getResultList();
@@ -41,7 +42,7 @@ public class EstudianteRepositorio implements Repository<Estudiante>{
 	}
 	
 	public List<Estudiante> getEstudiantesByGenero(char g) {
-		EntityManager em = emf.createEntityManager();
+		EntityManager em = Factory.createEntityManager();
 		em.getTransaction().begin();
 		TypedQuery<Estudiante> query = em.createQuery("SELECT e FROM Estudiante e WHERE e.genero = ?1", Estudiante.class);
 		query.setParameter(1, g);
@@ -51,7 +52,7 @@ public class EstudianteRepositorio implements Repository<Estudiante>{
 	}
 	
 	public List<Estudiante> getEstudiantesByCiudad(String c) {
-		EntityManager em = emf.createEntityManager();
+		EntityManager em = Factory.createEntityManager();
 		em.getTransaction().begin();
 		TypedQuery<Estudiante> query = em.createQuery("SELECT e FROM Estudiante e JOIN e.ciudad c WHERE c.nombre = :ciudad", Estudiante.class);
 		query.setParameter("ciudad", c);
@@ -62,7 +63,7 @@ public class EstudianteRepositorio implements Repository<Estudiante>{
 
 	@Override
 	public Estudiante save(Estudiante e) {
-		EntityManager em = emf.createEntityManager();
+		EntityManager em = Factory.createEntityManager();
 		em.getTransaction().begin();
 		if(!em.contains(e)) {
 			em.persist(e);
@@ -75,23 +76,22 @@ public class EstudianteRepositorio implements Repository<Estudiante>{
 	}
 
 	@Override
-	public boolean delete(Estudiante e) {
-		boolean remove = false;
-		EntityManager em = emf.createEntityManager();
-		em.getTransaction().begin();
-		if(!em.contains(e)) {
-			em.remove(e);
-			remove = true;
-			em.getTransaction().commit();
-		}
-		em.close();
-		return remove;
+	public boolean delete(int ID) {
+		boolean result=false;
+		EntityManager entityManager = Factory.createEntityManager();
+		entityManager.getTransaction().begin();
+		Estudiante estudiante=entityManager.find(Estudiante.class, ID);
+		if (estudiante!=null) result=true;
+		entityManager.remove(estudiante);
+		entityManager.getTransaction().commit();
+		entityManager.close();
+		return result;
 	}
 
 	@Override
 	public Estudiante update(Estudiante e) {
 		Estudiante updated = new Estudiante();
-		EntityManager em = emf.createEntityManager();
+		EntityManager em = Factory.createEntityManager();
 		em.getTransaction().begin();
 		if(!em.contains(e)) {
 			updated = em.merge(e);
@@ -99,6 +99,29 @@ public class EstudianteRepositorio implements Repository<Estudiante>{
 		}
 		em.close();
 		return updated;
+	}
+
+	@Override
+	public Estudiante get(int ID) {
+		EntityManager entityManager = Factory.createEntityManager();
+		Estudiante estudiante = entityManager.find(Estudiante.class, ID);
+		entityManager.close();
+		return estudiante;
+	}
+
+	@Override
+	public List<Estudiante> getAll() {
+		EntityManager entityManager = Factory.createEntityManager();
+		entityManager.getTransaction().begin();
+		CriteriaBuilder  cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Estudiante> cq = cb.createQuery(Estudiante.class);
+        Root<Estudiante> rootEntry = cq.from(Estudiante.class);
+        CriteriaQuery<Estudiante> all = cq.select(rootEntry);
+        TypedQuery<Estudiante> allQuery = entityManager.createQuery(all);
+        entityManager.getTransaction().commit();
+        List<Estudiante> result = allQuery.getResultList();
+		entityManager.close();
+        return result;
 	}
 
 }

@@ -1,8 +1,5 @@
 package Repositorio;
 
-
-
-
 import java.util.List;
 
 import Entidades.Carrera;
@@ -40,17 +37,16 @@ public class CarreraRepositorio implements Repository<Carrera>{
 	}
 
 	@Override
-	public boolean delete(Carrera c) {
-		boolean remove = false;
-		EntityManager em = Factory.createEntityManager();
-		em.getTransaction().begin();
-		if(!em.contains(c)) {
-			em.remove(c);
-			remove = true;
-			em.getTransaction().commit();
-		}
-		em.close();
-		return remove;
+	public boolean delete(int ID) {
+		boolean result=false;
+		EntityManager entityManager = Factory.createEntityManager();
+		entityManager.getTransaction().begin();
+		Carrera carrera=entityManager.find(Carrera.class, ID);
+		if (carrera!=null) result=true;
+		entityManager.remove(carrera);
+		entityManager.getTransaction().commit();
+		entityManager.close();
+		return result;
 	}
 
 	@Override
@@ -66,6 +62,7 @@ public class CarreraRepositorio implements Repository<Carrera>{
 		return updated;
 	}
 	
+	@Override
 	public Carrera get(int ID) {
 		EntityManager entityManager = Factory.createEntityManager();
 		Carrera carrera = entityManager.find(Carrera.class, ID);
@@ -73,6 +70,7 @@ public class CarreraRepositorio implements Repository<Carrera>{
 		return carrera;
 	}
 	
+	@Override
 	public List<Carrera> getAll() {
 		EntityManager entityManager = Factory.createEntityManager();
 		entityManager.getTransaction().begin();
@@ -82,8 +80,9 @@ public class CarreraRepositorio implements Repository<Carrera>{
         CriteriaQuery<Carrera> all = cq.select(rootEntry);
         TypedQuery<Carrera> allQuery = entityManager.createQuery(all);
         entityManager.getTransaction().commit();
+        List<Carrera> result = allQuery.getResultList();
 		entityManager.close();
-        return allQuery.getResultList();
+        return result;
 	}
 	
 }
