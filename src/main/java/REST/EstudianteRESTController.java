@@ -107,9 +107,9 @@ public class EstudianteRESTController {
 		if(result==null) {
 			throw new RecursoNoExiste(estudiante.getId());
 		}else {
-				return Response.status(200).entity(estudiante).build();
-			}
+			return Response.status(200).entity(estudiante).build();
 		}
+	}
 	
 	public class RecursoDuplicado extends WebApplicationException {
 	     public RecursoDuplicado(int id) {
